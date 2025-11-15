@@ -1,10 +1,8 @@
 import streamlit as st
 from database import init_db, consultar_turmas, consultar_professores, consultar_alunos
-from config.styles import get_custom_css
 from modules import turmas, professores, alunos
 
 st.set_page_config(page_title="Sistema de Monitoria", page_icon="📚", layout="wide")
-st.markdown(get_custom_css(), unsafe_allow_html=True)
 
 init_db()
 

@@ -1,52 +1,52 @@
-# Sistema de Monitoria
+# Tutoring Management System
 
-- Sistema web para gerenciamento de turmas, professores e alunos.
-- Feito como trabalho final da Escola Feminina de Programação - 2025
+- Web system for managing classes, teachers, and students.
+- Created as final project for Women's Programming School - 2025
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
 ```
 site_monitoria/
-├── app.py                 # Aplicação principal
-├── database.py            # Funções do banco de dados
-├── requirements.txt       # Dependências
+├── app.py                 # Main application
+├── database.py            # Database functions
+├── requirements.txt       # Dependencies
 ├── config/
 │   ├── __init__.py
-│   └── styles.py         # Estilos CSS customizados
+│   └── styles.py         # Custom CSS styles
 └── modules/
     ├── __init__.py
-    ├── turmas.py         # Módulo de turmas
-    ├── professores.py    # Módulo de professores
-    └── alunos.py         # Módulo de alunos
+    ├── turmas.py         # Classes module
+    ├── professores.py    # Teachers module
+    └── alunos.py         # Students module
 ```
 
-## 🎯 Funcionalidades
+## 🎯 Features
 
-- **Turmas**: Cadastrar, consultar, modificar e excluir turmas
-- **Professores**: Gerenciar professores (1 professor por turma)
-- **Alunos**: Gerenciar alunos (podem estar em múltiplas turmas)
+- **Classes**: Create, read, update, and delete classes
+- **Teachers**: Manage teachers (1 teacher per class)
+- **Students**: Manage students (can be enrolled in multiple classes)
 
-## 🔗 Relacionamentos
+## 🔗 Relationships
 
-- **Aluno ↔ Turma**: Many-to-Many (um aluno pode estar em várias turmas)
-- **Professor ↔ Turma**: One-to-One (um professor leciona em apenas uma turma)
+- **Student ↔ Class**: Many-to-Many (a student can be in multiple classes)
+- **Teacher ↔ Class**: One-to-One (a teacher teaches only one class)
 
-## 💾 Banco de Dados
+## 💾 Database
 
-SQLite com 4 tabelas:
-- `turmas`: Informações das turmas
-- `professores`: Dados dos professores
-- `alunos`: Dados dos alunos
-- `aluno_turma`: Tabela de junção (many-to-many)
+SQLite with 4 tables:
+- `turmas`: Class information
+- `professores`: Teacher data
+- `alunos`: Student data
+- `aluno_turma`: Junction table (many-to-many)
 
-## 🚀 Instalação e Execução
+## 🚀 Installation and Execution
 
 ```bash
 pip install -r requirements.txt
 python -m streamlit run app.py
 ```
 
-## 🛠️ Tecnologias
+## 🛠️ Technologies
 
 - Python 3.12
 - Streamlit 1.31.0
