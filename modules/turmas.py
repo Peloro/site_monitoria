@@ -44,43 +44,66 @@ def cadastrar():
 
 def consultar():
     st.header("Consultar Turmas")
-    tipo = st.radio("Tipo:", ["Todas", "Buscar por Código"])
     
-    if tipo == "Todas":
-        turmas = consultar_turmas()
-        if turmas:
-            dados = [[t[1], t[2], t[3], t[4], t[5]] for t in turmas]
+    turmas = consultar_turmas()
+    
+    if turmas:
+        # Filtros
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            busca = st.text_input("🔍 Pesquisar", placeholder="Nome ou código...")
+        with col2:
+            turno_filtro = st.selectbox("Turno", ["Todos", "Matutino", "Vespertino", "Noturno"])
+        with col3:
+            ano_filtro = st.selectbox("Ano", ["Todos"] + sorted(list(set([str(t[4]) for t in turmas])), reverse=True))
+        
+        # Aplicar filtros
+        turmas_filtradas = turmas
+        
+        if busca:
+            turmas_filtradas = [t for t in turmas_filtradas if 
+                              busca.lower() in t[1].lower() or busca.lower() in t[2].lower()]
+        
+        if turno_filtro != "Todos":
+            turmas_filtradas = [t for t in turmas_filtradas if t[3] == turno_filtro]
+        
+        if ano_filtro != "Todos":
+            turmas_filtradas = [t for t in turmas_filtradas if str(t[4]) == ano_filtro]
+        
+        if turmas_filtradas:
+            dados = [[t[1], t[2], t[3], t[4], t[5]] for t in turmas_filtradas]
             df = pd.DataFrame(dados, columns=["Nome", "Código", "Turno", "Ano", "Data Cadastro"])
             st.dataframe(df, use_container_width=True, hide_index=True)
-            st.info(f"Total: {len(turmas)} turmas")
-        else:
-            st.warning("Nenhuma turma cadastrada.")
-    else:
-        cod = st.text_input("Digite o código:", placeholder="Ex: 3A-2025")
-        if st.button("Buscar"):
-            if cod:
-                turma = consultar_turma_por_codigo(cod)
-                if turma:
-                    st.success("Turma encontrada!")
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.write(f"**Nome:** {turma[1]}\n**Código:** {turma[2]}\n**Turno:** {turma[3]}")
-                    with col2:
-                        st.write(f"**Ano:** {turma[4]}\n**Data:** {turma[5]}")
-                    
-                    st.markdown("### Alunos e Professor")
-                    conn = conectar_db()
-                    cursor = conn.cursor()
-                    cursor.execute("SELECT COUNT(DISTINCT a.id) FROM alunos a INNER JOIN aluno_turma at ON a.id = at.aluno_id WHERE at.turma_id = ?", (turma[0],))
-                    total_alunos = cursor.fetchone()[0]
-                    conn.close()
-                    
-                    prof = consultar_professor_por_turma(turma[0])
-                    prof_nome = prof[1] if prof else "Sem professor"
-                    st.write(f"**Professor:** {prof_nome}\n**Alunos:** {total_alunos}")
-                    
-                    # Opção para alterar professor
-                    st.markdown("### Alterar Professor")
+            st.info(f"Mostrando {len(turmas_filtradas)} de {len(turmas)} turmas")
+            
+            # Detalhes de turma selecionada
+            st.markdown("---")
+            st.markdown("### Detalhes da Turma")
+            turma_sel = st.selectbox("Selecione para ver detalhes:", 
+                                    [f"{t[2]} - {t[1]}" for t in turmas_filtradas])
+            
+            if turma_sel:
+                turma = next(t for t in turmas_filtradas if t[2] == turma_sel.split(" - ")[0])
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write(f"**Nome:** {turma[1]}\n**Código:** {turma[2]}\n**Turno:** {turma[3]}")
+                with col2:
+                    st.write(f"**Ano:** {turma[4]}\n**Data:** {turma[5]}")
+                
+                st.markdown("#### Alunos e Professor")
+                conn = conectar_db()
+                cursor = conn.cursor()
+                cursor.execute("SELECT COUNT(DISTINCT a.id) FROM alunos a INNER JOIN aluno_turma at ON a.id = at.aluno_id WHERE at.turma_id = ?", (turma[0],))
+                total_alunos = cursor.fetchone()[0]
+                conn.close()
+                
+                prof = consultar_professor_por_turma(turma[0])
+                prof_nome = prof[1] if prof else "Sem professor"
+                st.write(f"**Professor:** {prof_nome}\n**Alunos:** {total_alunos}")
+                
+                # Opção para alterar professor
+                with st.expander("🔧 Alterar Professor"):
                     todos_profs = consultar_professores()
                     profs_disponiveis = [p for p in todos_profs if not p[5] or p[5] == turma[0]]
                     
@@ -104,10 +127,10 @@ def consultar():
                                 st.error(msg)
                     else:
                         st.info("Nenhum professor disponível")
-                else:
-                    st.error("Turma não encontrada!")
-            else:
-                st.warning("Digite um código.")
+        else:
+            st.warning("Nenhuma turma encontrada com os filtros aplicados.")
+    else:
+        st.warning("Nenhuma turma cadastrada.")
 
 def modificar():
     st.header("Modificar Turma")

@@ -49,35 +49,41 @@ def cadastrar():
 
 def consultar():
     st.header("Consultar Professores")
-    tipo = st.radio("Tipo:", ["Todos", "Buscar por Matrícula"])
     
-    if tipo == "Todos":
-        profs = consultar_professores()
-        if profs:
+    profs = consultar_professores()
+    
+    if profs:
+        # Filtros
+        col1, col2 = st.columns(2)
+        with col1:
+            busca = st.text_input("🔍 Pesquisar", placeholder="Nome, matrícula ou email...")
+        with col2:
+            status_turma = st.selectbox("Status", ["Todos", "Com turma", "Sem turma"])
+        
+        # Aplicar filtros
+        profs_filtrados = profs
+        
+        if busca:
+            profs_filtrados = [p for p in profs_filtrados if 
+                             busca.lower() in p[1].lower() or 
+                             busca.lower() in p[2].lower() or 
+                             busca.lower() in p[3].lower()]
+        
+        if status_turma == "Com turma":
+            profs_filtrados = [p for p in profs_filtrados if p[5]]
+        elif status_turma == "Sem turma":
+            profs_filtrados = [p for p in profs_filtrados if not p[5]]
+        
+        if profs_filtrados:
             dados = [[p[1], p[2], p[3], p[4] or "N/A",
-                     f"{p[8]} ({p[7]})" if p[7] else "Sem turma", p[6]] for p in profs]
+                     f"{p[8]} ({p[7]})" if p[7] else "Sem turma", p[6]] for p in profs_filtrados]
             df = pd.DataFrame(dados, columns=["Nome", "Matrícula", "E-mail", "Telefone", "Turma", "Data Cadastro"])
             st.dataframe(df, use_container_width=True, hide_index=True)
-            st.info(f"Total: {len(profs)} professores")
+            st.info(f"Mostrando {len(profs_filtrados)} de {len(profs)} professores")
         else:
-            st.warning("Nenhum professor cadastrado.")
+            st.warning("Nenhum professor encontrado com os filtros aplicados.")
     else:
-        mat = st.text_input("Digite a matrícula:", placeholder="Ex: PROF001")
-        if st.button("Buscar"):
-            if mat:
-                prof = consultar_professor_por_cpf(mat)
-                if prof:
-                    st.success("Professor encontrado!")
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.write(f"**Nome:** {prof[1]}\n**Matrícula:** {prof[2]}\n**E-mail:** {prof[3]}")
-                    with col2:
-                        turma_info = f"{prof[8]} ({prof[7]})" if prof[7] else "Sem turma"
-                        st.write(f"**Telefone:** {prof[4] or 'N/A'}\n**Turma:** {turma_info}\n**Data:** {prof[6]}")
-                else:
-                    st.error("Professor não encontrado!")
-            else:
-                st.warning("Digite uma matrícula.")
+        st.warning("Nenhum professor cadastrado.")
 
 def modificar():
     st.header("Modificar Professor")

@@ -44,35 +44,66 @@ def cadastrar():
 
 def consultar():
     st.header("Consultar Alunos")
-    tipo = st.radio("Tipo:", ["Todos", "Buscar por Matrícula"])
     
-    if tipo == "Todos":
-        alunos = consultar_alunos()
-        if alunos:
-            dados = [[a[1], a[2], a[3], a[4], a[5] or "N/A", a[6] or "Sem turma", a[7]] for a in alunos]
+    alunos = consultar_alunos()
+    
+    if alunos:
+        # Filtros
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            busca = st.text_input("🔍 Pesquisar", placeholder="Nome, matrícula ou email...")
+        with col2:
+            turmas_disponiveis = consultar_turmas()
+            turma_filtro = st.selectbox("Turma", ["Todas"] + [f"{t[2]} - {t[1]}" for t in turmas_disponiveis])
+        with col3:
+            cursos = sorted(list(set([a[3] for a in alunos])))
+            curso_filtro = st.selectbox("Curso", ["Todos"] + cursos)
+        
+        # Aplicar filtros
+        alunos_filtrados = alunos
+        
+        if busca:
+            alunos_filtrados = [a for a in alunos_filtrados if 
+                              busca.lower() in a[1].lower() or 
+                              busca.lower() in a[2].lower() or 
+                              busca.lower() in a[4].lower()]
+        
+        if turma_filtro != "Todas":
+            turma_codigo = turma_filtro.split(" - ")[0]
+            alunos_filtrados = [a for a in alunos_filtrados if turma_codigo in (a[6] or "")]
+        
+        if curso_filtro != "Todos":
+            alunos_filtrados = [a for a in alunos_filtrados if a[3] == curso_filtro]
+        
+        if alunos_filtrados:
+            dados = [[a[1], a[2], a[3], a[4], a[5] or "N/A", a[6] or "Sem turma", a[7]] for a in alunos_filtrados]
             df = pd.DataFrame(dados, columns=["Nome", "Matrícula", "Curso", "E-mail", "Telefone", "Turmas", "Data Cadastro"])
             st.dataframe(df, use_container_width=True, hide_index=True)
-            st.info(f"Total: {len(alunos)} alunos")
-        else:
-            st.warning("Nenhum aluno cadastrado.")
-    else:
-        mat = st.text_input("Digite a matrícula:", placeholder="Ex: 20231234")
-        if st.button("Buscar"):
-            if mat:
+            st.info(f"Mostrando {len(alunos_filtrados)} de {len(alunos)} alunos")
+            
+            # Detalhes de aluno selecionado
+            st.markdown("---")
+            st.markdown("### Detalhes do Aluno")
+            aluno_sel = st.selectbox("Selecione para ver detalhes:", 
+                                    [f"{a[2]} - {a[1]}" for a in alunos_filtrados])
+            
+            if aluno_sel:
+                mat = aluno_sel.split(" - ")[0]
                 resultado = consultar_aluno_por_matricula(mat)
+                
                 if resultado:
                     aluno, turmas_aluno = resultado
-                    st.success("Aluno encontrado!")
+                    
                     col1, col2 = st.columns(2)
                     with col1:
                         st.write(f"**Nome:** {aluno[1]}\n**Matrícula:** {aluno[2]}\n**Curso:** {aluno[3]}\n**E-mail:** {aluno[4]}")
                     with col2:
                         turmas_info = ", ".join([f"{t[2]} ({t[1]})" for t in turmas_aluno]) if turmas_aluno else "Sem turma"
                         st.write(f"**Telefone:** {aluno[5] or 'N/A'}\n**Turmas:** {turmas_info}\n**Data:** {aluno[6]}")
-                else:
-                    st.error("Aluno não encontrado!")
-            else:
-                st.warning("Digite uma matrícula.")
+        else:
+            st.warning("Nenhum aluno encontrado com os filtros aplicados.")
+    else:
+        st.warning("Nenhum aluno cadastrado.")
 
 def modificar():
     st.header("Modificar Aluno")
