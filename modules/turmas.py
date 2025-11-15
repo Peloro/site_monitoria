@@ -101,32 +101,6 @@ def consultar():
                 prof = consultar_professor_por_turma(turma[0])
                 prof_nome = prof[1] if prof else "Sem professor"
                 st.write(f"**Professor:** {prof_nome}\n**Alunos:** {total_alunos}")
-                
-                # Opção para alterar professor
-                with st.expander("🔧 Alterar Professor"):
-                    todos_profs = consultar_professores()
-                    profs_disponiveis = [p for p in todos_profs if not p[5] or p[5] == turma[0]]
-                    
-                    if profs_disponiveis:
-                        opts = ["Remover professor"] + [f"{p[2]} - {p[1]}" for p in profs_disponiveis]
-                        prof_atual_idx = 0
-                        if prof:
-                            prof_atual_idx = next((i for i, p in enumerate(profs_disponiveis) if p[0] == prof[0]), 0) + 1
-                        
-                        novo_prof = st.selectbox("Professor:", opts, index=prof_atual_idx)
-                        
-                        if st.button("Atribuir Professor"):
-                            prof_id = None
-                            if novo_prof != "Remover professor":
-                                prof_id = next(p[0] for p in profs_disponiveis if p[2] == novo_prof.split(" - ")[0])
-                            sucesso, msg = atribuir_professor_turma(turma[0], prof_id)
-                            if sucesso:
-                                st.success(msg)
-                                st.rerun()
-                            else:
-                                st.error(msg)
-                    else:
-                        st.info("Nenhum professor disponível")
         else:
             st.warning("Nenhuma turma encontrada com os filtros aplicados.")
     else:
@@ -143,12 +117,10 @@ def modificar():
         if turma:
             st.markdown("### Dados Atuais")
             
-            # Exibir professor atual
+            # Obter professor atual e professores disponíveis
             prof = consultar_professor_por_turma(turma[0])
-            if prof:
-                st.info(f"👨‍🏫 Professor: {prof[1]} ({prof[2]})")
-            else:
-                st.warning("Sem professor atribuído")
+            todos_profs = consultar_professores()
+            profs_disponiveis = [p for p in todos_profs if not p[5] or p[5] == turma[0]]
             
             with st.form("form_mod_turma"):
                 col1, col2 = st.columns(2)
@@ -160,45 +132,39 @@ def modificar():
                     st.text_input("Código", value=turma[2], disabled=True)
                     novo_ano = st.number_input("Ano *", min_value=2020, max_value=2030, value=int(turma[4]), step=1)
                 
+                # Dropdown de professor dentro do formulário
+                if profs_disponiveis:
+                    opts = ["Sem Professor"] + [f"{p[2]} - {p[1]}" for p in profs_disponiveis]
+                    prof_atual_idx = 0
+                    if prof:
+                        prof_atual_idx = next((i for i, p in enumerate(profs_disponiveis) if p[0] == prof[0]), 0) + 1
+                    
+                    novo_prof = st.selectbox("Professor", opts, index=prof_atual_idx)
+                else:
+                    st.info("Nenhum professor disponível")
+                    novo_prof = "Sem Professor"
+                
                 st.info("Código não pode ser alterado.")
                 
                 if st.form_submit_button("Salvar", use_container_width=True):
                     if novo_nome:
+                        # Atualizar dados da turma
                         sucesso, msg = atualizar_turma(turma[0], novo_nome, novo_turno, novo_ano)
                         if sucesso:
+                            # Atualizar professor
+                            prof_id = None
+                            if novo_prof != "Sem Professor":
+                                prof_id = next(p[0] for p in profs_disponiveis if p[2] == novo_prof.split(" - ")[0])
+                            sucesso_prof, msg_prof = atribuir_professor_turma(turma[0], prof_id)
+                            
                             st.success(msg)
+                            if sucesso_prof:
+                                st.success(msg_prof)
                             st.rerun()
                         else:
                             st.error(msg)
                     else:
                         st.error("Preencha os campos obrigatórios!")
-            
-            # Seção para modificar professor
-            st.markdown("---")
-            st.markdown("### Modificar Professor")
-            todos_profs = consultar_professores()
-            profs_disponiveis = [p for p in todos_profs if not p[5] or p[5] == turma[0]]
-            
-            if profs_disponiveis:
-                opts = ["Remover professor"] + [f"{p[2]} - {p[1]}" for p in profs_disponiveis]
-                prof_atual_idx = 0
-                if prof:
-                    prof_atual_idx = next((i for i, p in enumerate(profs_disponiveis) if p[0] == prof[0]), 0) + 1
-                
-                novo_prof = st.selectbox("Selecione o professor:", opts, index=prof_atual_idx)
-                
-                if st.button("Atribuir Professor", type="primary"):
-                    prof_id = None
-                    if novo_prof != "Remover professor":
-                        prof_id = next(p[0] for p in profs_disponiveis if p[2] == novo_prof.split(" - ")[0])
-                    sucesso, msg = atribuir_professor_turma(turma[0], prof_id)
-                    if sucesso:
-                        st.success(msg)
-                        st.rerun()
-                    else:
-                        st.error(msg)
-            else:
-                st.info("Nenhum professor disponível")
     else:
         st.warning("Nenhuma turma cadastrada.")
 
