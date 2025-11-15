@@ -38,7 +38,11 @@ def cadastrar():
         if st.form_submit_button("Cadastrar", use_container_width=True):
             if nome and codigo:
                 sucesso, msg = inserir_turma(nome, codigo, turno, ano)
-                st.success(msg) if sucesso else st.error(msg)
+                if sucesso:
+                    st.success(msg)
+                    st.rerun()
+                else:
+                    st.error(msg)
             else:
                 st.error("Preencha os campos obrigatórios!")
 
@@ -161,14 +165,15 @@ def modificar():
                                 prof_id = next(p[0] for p in profs_disponiveis if p[2] == novo_prof.split(" - ")[0])
                             sucesso_prof, msg_prof = atribuir_professor_turma(turma[0], prof_id)
                             
-                            st.success(msg)
                             if sucesso_prof:
-                                st.success(msg_prof)
+                                st.success(f"✅ {msg} | {msg_prof}")
+                            else:
+                                st.warning(f"✅ {msg} | ⚠️ {msg_prof}")
                             st.rerun()
                         else:
-                            st.error(msg)
+                            st.error(f"❌ {msg}")
                     else:
-                        st.error("Preencha os campos obrigatórios!")
+                        st.error("❌ Preencha os campos obrigatórios!")
     else:
         st.warning("Nenhuma turma cadastrada.")
 

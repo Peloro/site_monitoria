@@ -43,7 +43,11 @@ def cadastrar():
                 if turma_sel != "Nenhuma":
                     turma_id = next(t[0] for t in turmas if t[2] == turma_sel.split(" - ")[0])
                 sucesso, msg = inserir_professor(nome, matricula, email, tel, turma_id)
-                st.success(msg) if sucesso else st.error(msg)
+                if sucesso:
+                    st.success(msg)
+                    st.rerun()
+                else:
+                    st.error(msg)
             else:
                 st.error("Preencha os campos obrigatórios!")
 

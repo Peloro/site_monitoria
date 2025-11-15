@@ -38,7 +38,11 @@ def cadastrar():
             if nome and matricula and curso and email:
                 turma_ids = [next(t[0] for t in turmas if t[2] == ts.split(" - ")[0]) for ts in turmas_sel] if turmas_sel else []
                 sucesso, msg = inserir_aluno(nome, matricula, curso, email, telefone, turma_ids)
-                st.success(msg) if sucesso else st.error(msg)
+                if sucesso:
+                    st.success(msg)
+                    st.rerun()
+                else:
+                    st.error(msg)
             else:
                 st.error("Preencha os campos obrigatórios!")
 
