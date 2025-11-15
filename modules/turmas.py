@@ -87,9 +87,12 @@ def consultar():
                 
                 col1, col2 = st.columns(2)
                 with col1:
-                    st.write(f"**Nome:** {turma[1]}\n**Código:** {turma[2]}\n**Turno:** {turma[3]}")
+                    st.write(f"**Nome:** {turma[1]}")
+                    st.write(f"**Código:** {turma[2]}")
+                    st.write(f"**Turno:** {turma[3]}")
                 with col2:
-                    st.write(f"**Ano:** {turma[4]}\n**Data:** {turma[5]}")
+                    st.write(f"**Ano:** {turma[4]}")
+                    st.write(f"**Data:** {turma[5]}")
                 
                 st.markdown("#### Alunos e Professor")
                 conn = conectar_db()
@@ -100,7 +103,8 @@ def consultar():
                 
                 prof = consultar_professor_por_turma(turma[0])
                 prof_nome = prof[1] if prof else "Sem professor"
-                st.write(f"**Professor:** {prof_nome}\n**Alunos:** {total_alunos}")
+                st.write(f"**Professor:** {prof_nome}")
+                st.write(f"**Alunos:** {total_alunos}")
         else:
             st.warning("Nenhuma turma encontrada com os filtros aplicados.")
     else:
@@ -180,9 +184,11 @@ def excluir():
             st.markdown("### Dados")
             col1, col2 = st.columns(2)
             with col1:
-                st.write(f"**Nome:** {turma[1]}\n**Código:** {turma[2]}")
+                st.write(f"**Nome:** {turma[1]}")
+                st.write(f"**Código:** {turma[2]}")
             with col2:
-                st.write(f"**Turno:** {turma[3]}\n**Ano:** {turma[4]}")
+                st.write(f"**Turno:** {turma[3]}")
+                st.write(f"**Ano:** {turma[4]}")
             
             st.warning("Ação irreversível!")
             if st.button("Confirmar Exclusão", type="primary"):

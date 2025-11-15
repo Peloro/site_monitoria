@@ -96,10 +96,15 @@ def consultar():
                     
                     col1, col2 = st.columns(2)
                     with col1:
-                        st.write(f"**Nome:** {aluno[1]}\n**Matrícula:** {aluno[2]}\n**Curso:** {aluno[3]}\n**E-mail:** {aluno[4]}")
+                        st.write(f"**Nome:** {aluno[1]}")
+                        st.write(f"**Matrícula:** {aluno[2]}")
+                        st.write(f"**Curso:** {aluno[3]}")
+                        st.write(f"**E-mail:** {aluno[4]}")
                     with col2:
+                        st.write(f"**Telefone:** {aluno[5] or 'N/A'}")
                         turmas_info = ", ".join([f"{t[2]} ({t[1]})" for t in turmas_aluno]) if turmas_aluno else "Sem turma"
-                        st.write(f"**Telefone:** {aluno[5] or 'N/A'}\n**Turmas:** {turmas_info}\n**Data:** {aluno[6]}")
+                        st.write(f"**Turmas:** {turmas_info}")
+                        st.write(f"**Data:** {aluno[6]}")
         else:
             st.warning("Nenhum aluno encontrado com os filtros aplicados.")
     else:
@@ -159,10 +164,14 @@ def excluir():
             st.markdown("### Dados")
             col1, col2 = st.columns(2)
             with col1:
-                st.write(f"**Nome:** {aluno[1]}\n**Matrícula:** {aluno[2]}\n**Curso:** {aluno[3]}")
+                st.write(f"**Nome:** {aluno[1]}")
+                st.write(f"**Matrícula:** {aluno[2]}")
+                st.write(f"**Curso:** {aluno[3]}")
             with col2:
+                st.write(f"**E-mail:** {aluno[4]}")
+                st.write(f"**Telefone:** {aluno[5] or 'N/A'}")
                 turmas_info = ", ".join([f"{t[2]} ({t[1]})" for t in turmas_aluno]) if turmas_aluno else "Sem turma"
-                st.write(f"**E-mail:** {aluno[4]}\n**Telefone:** {aluno[5] or 'N/A'}\n**Turmas:** {turmas_info}")
+                st.write(f"**Turmas:** {turmas_info}")
             
             st.warning("Ação irreversível!")
             if st.button("Confirmar Exclusão", type="primary"):

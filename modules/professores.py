@@ -145,10 +145,13 @@ def excluir():
             st.markdown("### Dados")
             col1, col2 = st.columns(2)
             with col1:
-                st.write(f"**Nome:** {prof[1]}\n**Matrícula:** {prof[2]}\n**E-mail:** {prof[3]}")
+                st.write(f"**Nome:** {prof[1]}")
+                st.write(f"**Matrícula:** {prof[2]}")
+                st.write(f"**E-mail:** {prof[3]}")
             with col2:
+                st.write(f"**Telefone:** {prof[4] or 'N/A'}")
                 turma_info = f"{prof[8]} ({prof[7]})" if prof[7] else "Sem turma"
-                st.write(f"**Telefone:** {prof[4] or 'N/A'}\n**Turma:** {turma_info}")
+                st.write(f"**Turma:** {turma_info}")
             
             st.warning("Ação irreversível!")
             if st.button("Confirmar Exclusão", type="primary"):
