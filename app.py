@@ -33,6 +33,3 @@ elif menu in ["Turmas", "Professores", "Alunos"]:
         professores.render(submenu)
     elif menu == "Alunos":
         alunos.render(submenu)
-
-st.markdown("---")
-st.markdown("Sistema de Monitoria © 2025")
