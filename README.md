@@ -10,9 +10,6 @@ site_monitoria/
 ├── app.py                # Main application
 ├── database.py           # Database functions
 ├── requirements.txt      # Dependencies
-├── config/
-│   ├── __init__.py
-│   └── styles.py         # Custom CSS styles
 └── modules/
     ├── __init__.py
     ├── turmas.py         # Classes module
