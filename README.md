@@ -1,6 +1,7 @@
 # Sistema de Monitoria
 
 Sistema web para gerenciamento de turmas, professores e alunos.
+Feito como trabalho final da Escola Feminina de Programação - 2025
 
 ## 📁 Estrutura do Projeto
 
