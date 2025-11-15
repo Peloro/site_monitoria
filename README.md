@@ -1,86 +1,53 @@
-# Sistema de Gerenciamento de Monitoria
+# Sistema de Monitoria
 
-Sistema web completo desenvolvido com Streamlit para gerenciar turmas, professores e alunos em programas de monitoria.
-
-## 📋 Funcionalidades
-
-### 👥 Gestão de Turmas
-- ➕ **Cadastrar Turmas**: Crie turmas com nome, código, período e sala
-- 🔍 **Consultar Turmas**: Visualize todas as turmas e seus detalhes (professores e alunos)
-- ✏️ **Modificar Turmas**: Atualize informações de turmas existentes
-- 🗑️ **Excluir Turmas**: Remova turmas do sistema (apenas se não houver alunos ou professores vinculados)
-
-### 👨‍🏫 Gestão de Professores
-- ➕ **Cadastrar Professores**: Adicione professores e atribua a uma turma
-- 🔍 **Consultar Professores**: Visualize todos os professores e suas turmas
-- ✏️ **Modificar Professores**: Atualize dados e reatribua turmas
-- 🗑️ **Excluir Professores**: Remova professores do sistema
-- ⚠️ **Regra**: Cada professor pode estar em apenas UMA turma, e cada turma pode ter apenas UM professor
-
-### 👨‍🎓 Gestão de Alunos
-- ➕ **Cadastrar Alunos**: Adicione alunos e designe-os a turmas
-- 🔍 **Consultar Alunos**: Visualize todos os alunos ou busque por matrícula
-- ✏️ **Modificar Alunos**: Atualize informações e mude de turma
-- 🗑️ **Excluir Alunos**: Remova alunos do sistema
-
-## 🚀 Como Executar
-
-1. Instale as dependências:
-```bash
-pip install -r requirements.txt
-```
-
-2. Execute o aplicativo:
-```bash
-streamlit run app.py
-```
-
-3. O aplicativo abrirá automaticamente no navegador em `http://localhost:8501`
-
-## 💾 Banco de Dados
-
-O sistema utiliza SQLite com três tabelas relacionadas:
-- **turmas**: Armazena informações das turmas
-- **professores**: Armazena dados dos professores (com chave estrangeira para turmas)
-- **alunos**: Armazena dados dos alunos (com chave estrangeira para turmas)
-
-O arquivo `monitoria.db` será criado automaticamente na primeira execução.
+Sistema web para gerenciamento de turmas, professores e alunos.
 
 ## 📁 Estrutura do Projeto
 
 ```
 site_monitoria/
-├── app.py              # Aplicação principal Streamlit
-├── database.py         # Funções de banco de dados
-├── requirements.txt    # Dependências do projeto
-└── README.md          # Este arquivo
+├── app.py                 # Aplicação principal
+├── database.py            # Funções do banco de dados
+├── requirements.txt       # Dependências
+├── config/
+│   ├── __init__.py
+│   └── styles.py         # Estilos CSS customizados
+└── modules/
+    ├── __init__.py
+    ├── turmas.py         # Módulo de turmas
+    ├── professores.py    # Módulo de professores
+    └── alunos.py         # Módulo de alunos
 ```
 
-## 📊 Modelo de Dados
+## 🎯 Funcionalidades
 
-### Turma
-- Nome, Código (único), Período, Sala, Data de cadastro
+- **Turmas**: Cadastrar, consultar, modificar e excluir turmas
+- **Professores**: Gerenciar professores (1 professor por turma)
+- **Alunos**: Gerenciar alunos (podem estar em múltiplas turmas)
 
-### Professor
-- Nome, Matrícula (único), E-mail, Telefone, Turma (FK), Data de cadastro
-- **Relacionamento**: 1:1 com Turma (um professor por turma)
+## 🔗 Relacionamentos
 
-### Aluno
-- Nome, Matrícula (único), Curso, E-mail, Telefone, Turma (FK), Data de cadastro
-- **Relacionamento**: N:1 com Turma (vários alunos por turma)
+- **Aluno ↔ Turma**: Many-to-Many (um aluno pode estar em várias turmas)
+- **Professor ↔ Turma**: One-to-One (um professor leciona em apenas uma turma)
+
+## 💾 Banco de Dados
+
+SQLite com 4 tabelas:
+- `turmas`: Informações das turmas
+- `professores`: Dados dos professores
+- `alunos`: Dados dos alunos
+- `aluno_turma`: Tabela de junção (many-to-many)
+
+## 🚀 Instalação e Execução
+
+```bash
+pip install -r requirements.txt
+streamlit run app.py
+```
 
 ## 🛠️ Tecnologias
 
-- Python 3.x
-- Streamlit
+- Python 3.12
+- Streamlit 1.31.0
 - SQLite3
-- Pandas
-
-## ℹ️ Regras de Negócio
-
-1. Cada turma pode ter **apenas um professor**
-2. Cada professor pode estar em **apenas uma turma**
-3. Cada aluno pode estar em **apenas uma turma**
-4. Uma turma pode ter **vários alunos**
-5. Turmas só podem ser excluídas se não houver alunos ou professores vinculados
-6. Matrícula e código de turma são únicos e não podem ser alterados após cadastro
+- Pandas 2.1.4
